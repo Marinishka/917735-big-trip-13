@@ -1,4 +1,6 @@
-export const createTripNewPointOffersTemplate = (editPoint) => {
+import {createElement} from '../utils.js';
+
+const createTripNewPointOffersTemplate = (editPoint) => {
   const {activeOffers} = editPoint;
 
   const getIdActiveOffers = () => {
@@ -41,3 +43,26 @@ export const createTripNewPointOffersTemplate = (editPoint) => {
     </div>
   </section>`;
 };
+
+export default class EditPointOffers {
+  constructor(point) {
+    this._element = null;
+    this._point = point;
+  }
+
+  getTemplate() {
+    return createTripNewPointOffersTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

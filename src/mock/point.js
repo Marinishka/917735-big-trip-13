@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -140,7 +140,6 @@ const generatePhoto = () => {
 
 export const generatePoint = () => {
   const isFavorite = Boolean(getRandomInteger(0, 1));
-  const isDestination = Boolean(getRandomInteger(0, 1));
   const isDesctription = Boolean(getRandomInteger(0, 1));
   const isPhotos = Boolean(getRandomInteger(0, 1));
   const price = getRandomInteger(1, 500);
@@ -151,10 +150,9 @@ export const generatePoint = () => {
     type,
     city: generateCity(),
     activeOffers: type.offers === null ? null : generateOffers(type.offers),
-    destination: isDestination || (isDesctription & isPhotos) ? {
+    destination: isDesctription || isPhotos ? {
       description: isDesctription ? generateDescription() : null,
-      photos: isPhotos ? generatePhoto() : null}
-      : null,
+      photos: isPhotos ? generatePhoto() : null} : null,
     price,
     isFavorite,
     dateStart,

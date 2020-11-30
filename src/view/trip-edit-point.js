@@ -1,6 +1,7 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
+import {createElement} from '../utils.js';
 
-export const createTripNewPointTemplate = (editPoint) => {
+const createTripEditPointTemplate = (editPoint) => {
 
   const CITIES = [`Riga`, `Amsterdam`, `Berlin`, `Paris`, `Krakow`, `Hannover`];
   const generateOptions = (cities) => {
@@ -11,8 +12,7 @@ export const createTripNewPointTemplate = (editPoint) => {
     return options;
   };
 
-  return `<li class="trip-events__item">
-    <form class="event event--edit" action="#" method="post">
+  return `<form class="event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -107,9 +107,28 @@ export const createTripNewPointTemplate = (editPoint) => {
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Cancel</button>
       </header>
-      <section class="event__details">
-        
-      </section>
-    </form>
-  </li>`;
+    </form>`;
 };
+
+export default class EditPoint {
+  constructor(editPoint) {
+    this._element = null;
+    this._editPoint = editPoint;
+  }
+
+  getTemplate() {
+    return createTripEditPointTemplate(this._editPoint);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
