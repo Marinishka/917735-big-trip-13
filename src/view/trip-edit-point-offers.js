@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractView from './abstract.js';
 
 const createTripNewPointOffersTemplate = (editPoint) => {
   const {activeOffers} = editPoint;
@@ -44,25 +44,13 @@ const createTripNewPointOffersTemplate = (editPoint) => {
   </section>`;
 };
 
-export default class EditPointOffers {
+export default class EditPointOffers extends AbstractView {
   constructor(point) {
-    this._element = null;
+    super();
     this._point = point;
   }
 
   getTemplate() {
     return createTripNewPointOffersTemplate(this._point);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

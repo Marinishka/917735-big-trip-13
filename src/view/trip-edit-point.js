@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {createElement} from '../utils.js';
+import AbstractView from './abstract.js';
 
 const createTripEditPointTemplate = (editPoint) => {
 
@@ -110,25 +110,34 @@ const createTripEditPointTemplate = (editPoint) => {
     </form>`;
 };
 
-export default class EditPoint {
+export default class EditPoint extends AbstractView {
   constructor(editPoint) {
-    this._element = null;
+    super();
     this._editPoint = editPoint;
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._setClickHandler = this._setClickHandler.bind(this);
+  }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  _setClickHandler() {
+    this._callback.click();
   }
 
   getTemplate() {
     return createTripEditPointTemplate(this._editPoint);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().addEventListener(`submit`, this._formSubmitHandler);
   }
 
-  removeElement() {
-    this._element = null;
+  setPointClick(callback) {
+    this._callback.click = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._setClickHandler);
   }
 }

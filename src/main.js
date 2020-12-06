@@ -11,7 +11,7 @@ import TripEditPointDestinationView from './view/trip-edit-point-destination.js'
 import TripEditPointOffersView from './view/trip-edit-point-offers.js';
 import TripPointView from './view/trip-point.js';
 import {generatePoint} from './mock/point.js';
-import {render, RenderPosition} from './utils.js';
+import {render, RenderPosition, replace} from './utils/render.js';
 
 const renderPoint = (eventsItem, point) => {
   const tripPointView = new TripPointView(point);
@@ -47,25 +47,24 @@ const renderPoint = (eventsItem, point) => {
   };
 
   const replacePointToForm = () => {
-    eventsItem.replaceChild(tripEditPointView.getElement(), tripPointView.getElement());
+    replace(tripEditPointView, tripPointView);
     document.addEventListener(`keydown`, onEscKeyDown);
   };
 
   const replaceFormToPoint = () => {
-    eventsItem.replaceChild(tripPointView.getElement(), tripEditPointView.getElement());
+    replace(tripPointView, tripEditPointView);
     document.removeEventListener(`keydown`, onEscKeyDown);
   };
 
-  tripPointView.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+  tripPointView.setFormClick(() => {
     replacePointToForm();
   });
 
-  tripEditPointView.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, () => {
+  tripEditPointView.setPointClick(() => {
     replaceFormToPoint();
   });
 
-  tripEditPointView.getElement().addEventListener(`submit`, (evt) => {
-    evt.preventDefault();
+  tripEditPointView.setFormSubmitHandler(() => {
     replaceFormToPoint();
   });
 
