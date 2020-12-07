@@ -11,11 +11,11 @@ import TripEditPointDestinationView from './view/trip-edit-point-destination.js'
 import TripEditPointOffersView from './view/trip-edit-point-offers.js';
 import TripPointView from './view/trip-point.js';
 import {generatePoint} from './mock/point.js';
-import {render, RenderPosition} from './utils.js';
+import {render, RenderPosition, replace} from './utils/render.js';
 
 const renderPoint = (eventsItem, point) => {
-  const tripPoint = new TripPointView(point);
-  const tripEditPoint = new TripEditPointView(point);
+  const tripPointView = new TripPointView(point);
+  const tripEditPointView = new TripEditPointView(point);
 
   const renderDetails = () => {
     if (point.destination === null && point.type.offers === null) {
@@ -23,7 +23,7 @@ const renderPoint = (eventsItem, point) => {
     }
 
     const eventsDetails = new EventsDetailsView();
-    render(tripEditPoint.getElement(), eventsDetails.getElement(), RenderPosition.BEFOREEND);
+    render(tripEditPointView.getElement(), eventsDetails.getElement(), RenderPosition.BEFOREEND);
 
     const renderOffers = () => {
       return point.type.offers === null ? `` : render(eventsDetails.getElement(), new TripEditPointOffersView(point).getElement(), RenderPosition.BEFOREEND);
@@ -38,24 +38,37 @@ const renderPoint = (eventsItem, point) => {
 
   renderDetails();
 
+  const onEscKeyDown = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      replaceFormToPoint();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
   const replacePointToForm = () => {
-    eventsItem.replaceChild(tripEditPoint.getElement(), tripPoint.getElement());
+    replace(tripEditPointView, tripPointView);
+    document.addEventListener(`keydown`, onEscKeyDown);
   };
 
   const replaceFormToPoint = () => {
-    eventsItem.replaceChild(tripPoint.getElement(), tripEditPoint.getElement());
+    replace(tripPointView, tripEditPointView);
+    document.removeEventListener(`keydown`, onEscKeyDown);
   };
 
-  tripPoint.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+  tripPointView.setFormClick(() => {
     replacePointToForm();
   });
 
-  tripEditPoint.getElement().addEventListener(`submit`, (evt) => {
-    evt.preventDefault();
+  tripEditPointView.setPointClick(() => {
     replaceFormToPoint();
   });
 
-  render(eventsItem, tripPoint.getElement(), RenderPosition.BEFOREEND);
+  tripEditPointView.setFormSubmitHandler(() => {
+    replaceFormToPoint();
+  });
+
+  render(eventsItem, tripPointView.getElement(), RenderPosition.BEFOREEND);
 };
 
 const pageHeader = document.querySelector(`.page-header`);
