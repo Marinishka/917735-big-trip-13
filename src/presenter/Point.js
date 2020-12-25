@@ -59,14 +59,6 @@ export default class Point {
       replace(this._pointEditComponent, prevPointEditComponent);
     }
 
-    if (this._pointContainer.getElement().contains(prevPointComponent.getElement())) {
-      replace(this._pointComponent, prevPointComponent);
-    }
-
-    if (this._pointContainer.getElement().contains(prevPointEditComponent.getElement())) {
-      replace(this._pointEditComponent, prevPointEditComponent);
-    }
-
     remove(prevPointComponent);
     remove(prevPointEditComponent);
   }
@@ -78,6 +70,7 @@ export default class Point {
   }
 
   destroy() {
+    remove(this._pointContainer);
     remove(this._pointComponent);
     remove(this._pointEditComponent);
   }
