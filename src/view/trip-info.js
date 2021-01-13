@@ -11,10 +11,10 @@ const getPrice = (points) => {
 
 const getRoute = (points) => {
   let route = [];
-  route[0] = points[0].city;
+  route[0] = points[0].destination.name;
   for (let i = 1; i < points.length; i++) {
-    if (points[i].city !== route[route.length - 1]) {
-      route[route.length] = points[i].city;
+    if (points[i].destination.name !== route[route.length - 1]) {
+      route[route.length] = points[i].destination.name;
     }
   }
   return route;

@@ -1,6 +1,4 @@
 import TripEditPointView from '../view/trip-edit-point.js';
-import TripEditPointDestinationView from '../view/trip-edit-point-destination.js';
-import TripEditPointOffersView from '../view/trip-edit-point-offers.js';
 import TripPointView from '../view/trip-point.js';
 import EventsDetailsView from '../view/trip-events-details.js';
 import {remove, render, RenderPosition, replace} from '../utils/render.js';
@@ -20,6 +18,7 @@ export default class Point {
     this._mode = Mode.DEFAULT;
     this._hundleFavoriteClick = this._hundleFavoriteClick.bind(this);
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
+    this._handleFormSubmit = this._handleFormSubmit.bind(this);
   }
 
   init(point) {
@@ -42,9 +41,7 @@ export default class Point {
       this._replaceFormToPoint();
     });
 
-    this._pointEditComponent.setFormSubmitHandler(() => {
-      this._replaceFormToPoint();
-    });
+    this._pointEditComponent.setFormSubmitHandler(this._handleFormSubmit);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       this._renderPoint(point);
@@ -75,9 +72,7 @@ export default class Point {
     remove(this._pointEditComponent);
   }
 
-  _renderPoint(point) {
-    this._renderDetails(point);
-
+  _renderPoint() {
     render(this._pointContainer, this._pointComponent, RenderPosition.BEFOREEND);
   }
 
@@ -95,29 +90,6 @@ export default class Point {
 
   _renderDetailsContainer() {
     render(this._pointEditComponent, this._eventsDetails, RenderPosition.BEFOREEND);
-  }
-
-  _renderDetails(point) {
-    if (point.destination === null && point.type.offers === null) {
-      return;
-    }
-    this._renderDetailsContainer();
-
-    if (point.type.offers !== null) {
-      this._renderOffers(point);
-    }
-
-    if (point.destination !== null) {
-      this._renderDestination(point);
-    }
-  }
-
-  _renderOffers(point) {
-    render(this._eventsDetails, new TripEditPointOffersView(point), RenderPosition.BEFOREEND);
-  }
-
-  _renderDestination(point) {
-    render(this._eventsDetails, new TripEditPointDestinationView(point), RenderPosition.BEFOREEND);
   }
 
   _replacePointToForm() {
@@ -139,5 +111,10 @@ export default class Point {
       this._replaceFormToPoint();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
+  }
+
+  _handleFormSubmit(point) {
+    this._changeData(point);
+    this._replaceFormToPoint();
   }
 }

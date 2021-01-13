@@ -52,42 +52,46 @@ const isOffers = () => {
   return Boolean(getRandomInteger(0, 1));
 };
 
-const generateTypes = () => {
+export const generateTypes = () => {
   return [
     {
-      title: `Taxi`,
+      title: `taxi`,
       offers: isOffers() ? generateOffers(OFFERS) : null
     },
     {
-      title: `Bus`,
+      title: `bus`,
       offers: isOffers() ? generateOffers(OFFERS) : null
     },
     {
-      title: `Ship`,
+      title: `ship`,
       offers: isOffers() ? generateOffers(OFFERS) : null
     },
     {
-      title: `Transport`,
+      title: `transport`,
       offers: isOffers() ? generateOffers(OFFERS) : null
     },
     {
-      title: `Drive`,
+      title: `drive`,
       offers: isOffers() ? generateOffers(OFFERS) : null
     },
     {
-      title: `Flight`,
+      title: `flight`,
       offers: isOffers() ? generateOffers(OFFERS) : null
     },
     {
-      title: `Check-in`,
+      title: `check-in`,
       offers: isOffers() ? generateOffers(OFFERS) : null
     },
     {
-      title: `Sightseeing`,
+      title: `sightseeing`,
       offers: isOffers() ? generateOffers(OFFERS) : null
     },
     {
-      title: `Restaurant`,
+      title: `restaurant`,
+      offers: isOffers() ? generateOffers(OFFERS) : null
+    },
+    {
+      title: `train`,
       offers: isOffers() ? generateOffers(OFFERS) : null
     }
   ];
@@ -105,17 +109,30 @@ const generateFinishDate = (startDate) => {
   return dayjs(startDate).add(timeGap, `minute`);
 };
 
-const generateType = () => {
-  const types = generateTypes();
+const generateType = (types) => {
   const randomIndex = getRandomInteger(0, types.length - 1);
   return types[randomIndex];
 };
 
 const CITIES = [`Riga`, `Amsterdam`, `Berlin`, `Paris`, `Krakow`, `Hannover`];
 
-const generateCity = () => {
-  const randomIndex = getRandomInteger(0, CITIES.length - 1);
-  return CITIES[randomIndex];
+export const generateCities = () => {
+  let cities = [];
+  for (const city of CITIES) {
+    const isDescriptionCity = Boolean(getRandomInteger(0, 1));
+    const isPhotos = Boolean(getRandomInteger(0, 1));
+    cities.push({
+      name: city,
+      description: isDescriptionCity ? generateDescription() : null,
+      pictures: isPhotos ? generatePhoto() : null
+    });
+  }
+  return cities;
+};
+
+const generateCity = (cities) => {
+  const randomIndex = getRandomInteger(0, cities.length - 1);
+  return cities[randomIndex];
 };
 
 const DESCRIPTION = [`Lorem ipsum dolor sit amet, consectetur adipiscing elit.`, `Cras aliquet varius magna, non porta ligula feugiat eget.`, `Fusce tristique felis at fermentum pharetra.`, `Aliquam id orci ut lectus varius viverra.`, `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`, `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`, `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.`, `Sed sed nisi sed augue convallis suscipit in sed felis.`, `Aliquam erat volutpat.`, `Nunc fermentum tortor ac porta dapibus.`, `In rutrum ac purus sit amet tempus`];
@@ -136,28 +153,32 @@ const generateDescription = () => {
 
 const generatePhoto = () => {
   const randomNumber = getRandomInteger(1, 5);
-  let photo = [];
+  let photos = [];
   for (let i = 0; i < randomNumber; i++) {
-    photo.push(`http://picsum.photos/248/152?r=${Math.random()}`);
+    photos.push(
+        {
+          src: `http://picsum.photos/248/152?r=${Math.random()}`,
+          description: generateDescription()
+        }
+    );
   }
-  return photo;
+  return photos;
 };
 
-export const generatePoint = () => {
+export const generatePoint = (destinationInfo) => {
+  const {types, accessibleСities} = destinationInfo;
   const isFavorite = Boolean(getRandomInteger(0, 1));
-  const isDesctription = Boolean(getRandomInteger(0, 1));
-  const isPhotos = Boolean(getRandomInteger(0, 1));
   const price = getRandomInteger(1, 500);
   const dateStart = generateStartDate();
   const dateFinish = generateFinishDate(dateStart);
-  const type = generateType();
+  const type = generateType(types);
+  const city = generateCity(accessibleСities);
   return {
+    accessibleСities,
+    types,
     type,
-    city: generateCity(),
     activeOffers: type.offers === null ? null : generateOffers(type.offers),
-    destination: isDesctription || isPhotos ? {
-      description: isDesctription ? generateDescription() : null,
-      photos: isPhotos ? generatePhoto() : null} : null,
+    destination: city,
     price,
     isFavorite,
     dateStart,

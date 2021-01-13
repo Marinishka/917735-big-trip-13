@@ -2,20 +2,20 @@ import AbstractView from './abstract.js';
 
 const createTripNewPointDestinationTemplate = (editPoint) => {
   const {destination} = editPoint;
-  const {description, photos} = destination;
+  const {description, pictures} = destination;
 
-  const getPhotosList = (somePhotos) => {
+  const getPhotosList = (somePictures) => {
     let photoList = ``;
-    somePhotos.forEach(function (photo) {
-      photoList += `<img class="event__photo" src="${photo}" alt="Event photo">`;
+    somePictures.forEach(function (picture) {
+      photoList += `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`;
     });
     return photoList;
   };
 
   const getPhotosTemplate = () => {
-    return photos === null ? `` : `<div class="event__photos-container">
+    return pictures === null ? `` : `<div class="event__photos-container">
     <div class="event__photos-tape">
-      ${getPhotosList(photos)}
+      ${getPhotosList(pictures)}
     </div>
   </div>`;
   };
