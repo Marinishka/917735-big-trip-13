@@ -1,6 +1,6 @@
 import MenuView from './view/trip-menu.js';
 import FiltersView from './view/trip-filters.js';
-import {generatePoint} from './mock/point.js';
+import {generatePoint, generateTypes, generateCities} from './mock/point.js';
 import {render, RenderPosition} from './utils/render.js';
 import TripPresenter from './presenter/Trip.js';
 
@@ -12,7 +12,9 @@ render(tripControlsElement, new MenuView(), RenderPosition.BEFOREEND);
 render(tripControlsElement, new FiltersView(), RenderPosition.BEFOREEND);
 
 const POINT_COUNT = 20;
-const points = new Array(POINT_COUNT).fill().map(generatePoint);
+const types = generateTypes();
+const accessibleСities = generateCities();
+const points = new Array(POINT_COUNT).fill({types, accessibleСities}).map(generatePoint);
 const pageMain = document.querySelector(`.page-main`);
 const tripEventsElement = pageMain.querySelector(`.trip-events`);
 

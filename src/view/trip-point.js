@@ -2,7 +2,8 @@ import dayjs from 'dayjs';
 import AbstractView from './abstract.js';
 
 const createTripPointTemplate = (point) => {
-  const {type, city, activeOffers, price, dateStart, dateFinish, isFavorite} = point;
+  const {type, destination, activeOffers, price, dateStart, dateFinish, isFavorite} = point;
+  const {name: city} = destination;
   const {title} = type;
 
   const getOffersTemplate = (offers) => {
@@ -38,11 +39,10 @@ const createTripPointTemplate = (point) => {
     return duration;
   };
 
-  const image = title.toLowerCase();
   return `<div class="event">
       <time class="event__date" datetime="${dayjs(dateStart).format(`YYYY-MM-DD`)}">${dayjs(dateStart).format(`MMM DD`)}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${image}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${title}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${title} ${city}</h3>
       <div class="event__schedule">
