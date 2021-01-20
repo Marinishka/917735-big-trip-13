@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 const getPrice = (points) => {
   let fullPrice = 0;
   points.forEach((element) => {
-    fullPrice += element.price;
+    fullPrice += Number(element.price);
   });
   return fullPrice;
 };
@@ -36,7 +36,13 @@ const getInfoTitle = (route) => {
 };
 
 const getDates = (points) => {
-  let dates = [dayjs(points[0].dateStart).format(`DD MMM`), dayjs(points.pop().dateStart).format(`DD MMM`)];
+  let dates = [];
+  if (points.length > 1) {
+    dates = [dayjs(points[0].dateStart).format(`DD MMM`), dayjs(points[1].dateStart).format(`DD MMM`)];
+    dates = `${dayjs(points[0].dateStart).format(`DD MMM`)}&nbsp;&mdash;&nbsp;${dayjs(points[1].dateStart).format(`DD MMM`)}`;
+  } else {
+    dates = dayjs(points[0].dateStart).format(`DD MMM`);
+  }
   return dates;
 };
 
@@ -45,7 +51,7 @@ export const createTripInfoTemlate = (points) => {
     <div class="trip-info__main">
       <h1 class="trip-info__title">${getInfoTitle(getRoute(points))}</h1>
 
-      <p class="trip-info__dates">${getDates(points)[0]}&nbsp;&mdash;&nbsp;${getDates(points)[1]}</p>
+      <p class="trip-info__dates">${getDates(points)}</p>
     </div>
 
     <p class="trip-info__cost">
