@@ -1,15 +1,16 @@
 import MenuView from './view/trip-menu.js';
-import FiltersView from './view/trip-filters.js';
 import {generatePoint, generateTypes, generateCities} from './mock/point.js';
 import {render, RenderPosition} from './utils/render.js';
 import TripPresenter from './presenter/Trip.js';
+import FilterPresenter from './presenter/Filter.js';
+import PointsModel from './model/points.js';
+import FilterModel from './model/filter.js';
 
 const pageHeader = document.querySelector(`.page-header`);
 const tripMainElement = pageHeader.querySelector(`.trip-main`);
 const tripControlsElement = pageHeader.querySelector(`.trip-controls`);
 
 render(tripControlsElement, new MenuView(), RenderPosition.BEFOREEND);
-render(tripControlsElement, new FiltersView(), RenderPosition.BEFOREEND);
 
 const POINT_COUNT = 20;
 const types = generateTypes();
@@ -18,5 +19,15 @@ const points = new Array(POINT_COUNT).fill({types, accessibleСities}).map(gener
 const pageMain = document.querySelector(`.page-main`);
 const tripEventsElement = pageMain.querySelector(`.trip-events`);
 
-const tripPresenter = new TripPresenter(tripEventsElement, tripMainElement);
-tripPresenter.init(points);
+const pointsModel = new PointsModel();
+pointsModel.setPoints(points);
+const filterModel = new FilterModel();
+
+const tripPresenter = new TripPresenter(tripEventsElement, tripMainElement, pointsModel, filterModel);
+const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, pointsModel);
+filterPresenter.init();
+tripPresenter.init();
+document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
+  evt.preventDefault();
+  tripPresenter.createPoint(types, accessibleСities);
+});
