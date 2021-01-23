@@ -11,3 +11,11 @@ export const sortPointPrice = (pointA, pointB) => {
 export const sortPointTime = (pointA, pointB) => {
   return dayjs(pointA.dateStart).diff(dayjs(pointA.dateFinish)) - dayjs(pointB.dateStart).diff(dayjs(pointB.dateFinish));
 };
+
+export const isPointFuture = (point) => {
+  return dayjs().isBefore(point.dateStart);
+};
+
+export const isPointPast = (point) => {
+  return dayjs().isAfter(point.dateStart);
+};

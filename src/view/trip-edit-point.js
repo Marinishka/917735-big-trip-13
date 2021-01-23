@@ -1,5 +1,8 @@
 import dayjs from 'dayjs';
 import SmartView from './smart.js';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
 
@@ -106,9 +109,9 @@ const createTypeItem = (type, typeOfPoint) => {
   </div>`;
 };
 
-const createTypeList = (types, typeOfPoint) => {
+const createTypeList = (allTypes, typeOfPoint) => {
   let typeList = ``;
-  types.forEach(function (someType) {
+  allTypes.forEach(function (someType) {
     typeList += createTypeItem(someType, typeOfPoint);
   });
   return `<div class="event__type-list">
@@ -119,7 +122,7 @@ const createTypeList = (types, typeOfPoint) => {
   </div>`;
 };
 
-const createTripEditPointTemplate = (data) => {
+const createTripEditPointTemplate = (data, isNewPoint) => {
   const eventDetailsTemplate = createTripEventsDetailsTemplate(data);
 
   const CITIES = [`Riga`, `Amsterdam`, `Berlin`, `Paris`, `Krakow`, `Hannover`];
@@ -165,28 +168,91 @@ const createTripEditPointTemplate = (data) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${data.price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${data.price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
+        <button class="event__reset-btn" type="reset">${isNewPoint ? `Cancel` : `Delete`}</button>
+        ${isNewPoint ? `` : `<button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>`}
       </header>
       ${eventDetailsTemplate}
     </form>`;
 };
 
 export default class EditPoint extends SmartView {
-  constructor(editPoint) {
+  constructor(editPoint, isNewPoint = false) {
     super();
+    this._datepickerStart = null;
+    this._datepickerFinish = null;
     this._data = editPoint;
+    this._isNewPoint = isNewPoint;
+
+    this._dateStartChangeHandler = this._dateStartChangeHandler.bind(this);
+    this._dateFinishChangeHandler = this._dateFinishChangeHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._setClickHandler = this._setClickHandler.bind(this);
     this._cityChangeHandler = this._cityChangeHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._activeOffersChangeHandler = this._activeOffersChangeHandler.bind(this);
     this._priceChangeHandler = this._priceChangeHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepickerStart();
+    this._setDatepickerFinish();
+  }
+
+  _dateStartChangeHandler([userDate]) {
+    this.updateData({
+      dateStart: dayjs(userDate)
+    });
+  }
+
+  _dateFinishChangeHandler([userDate]) {
+    this.updateData({
+      dateFinish: dayjs(userDate)
+    });
+  }
+
+  _setDatepickerStart() {
+    if (this._datepickerStart) {
+      this._datepickerStart.destroy();
+      this._datepickerStart = null;
+    }
+
+    this._datepickerStart = flatpickr(
+        this.getElement().querySelector(`#event-start-time-1`),
+        {
+          enableTime: true,
+          dateFormat: `d/m/Y H:i`,
+          defaultDate: dayjs(this._data.dateStart).toDate(),
+          onChange: this._dateStartChangeHandler
+        }
+    );
+  }
+
+  _setDatepickerFinish() {
+    if (this._datepickerFinish) {
+      this._datepickerFinish.destroy();
+      this._datepickerFinish = null;
+    }
+
+    this._datepickerFinish = flatpickr(
+        this.getElement().querySelector(`#event-end-time-1`),
+        {
+          enableTime: true,
+          dateFormat: `d/m/Y H:i`,
+          defaultDate: dayjs(this._data.dateFinish).toDate(),
+          onChange: this._dateStartChangeHandler
+        }
+    );
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(this._data);
   }
 
   _formSubmitHandler(evt) {
@@ -199,7 +265,7 @@ export default class EditPoint extends SmartView {
   }
 
   getTemplate() {
-    return createTripEditPointTemplate(this._data);
+    return createTripEditPointTemplate(this._data, this._isNewPoint);
   }
 
   setFormSubmitHandler(callback) {
@@ -209,12 +275,20 @@ export default class EditPoint extends SmartView {
 
   setPointClick(callback) {
     this._callback.click = callback;
-    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._setClickHandler);
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._setClickHandler);
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
-    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._callback.click);
+    this._setDatepickerStart();
+    this._setDatepickerFinish();
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._callback.deleteClick);
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._callback.click);
     this.getElement().addEventListener(`submit`, this._callback.formSubmit);
   }
 
@@ -228,10 +302,14 @@ export default class EditPoint extends SmartView {
   }
 
   _cityChangeHandler(evt) {
-    const newcity = this._data.accessibleСities.find((city) => city.name === evt.target.value);
-    this.updateData({
-      destination: newcity
-    }, false);
+    if (evt.target.value === ``) {
+      return;
+    } else {
+      const newcity = this._data.accessibleСities.find((city) => city.name === evt.target.value);
+      this.updateData({
+        destination: newcity
+      }, false);
+    }
   }
 
   _typeChangeHandler(evt) {
