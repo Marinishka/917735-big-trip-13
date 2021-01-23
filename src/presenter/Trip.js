@@ -4,6 +4,7 @@ import ListEmptyView from '../view/trip-list-empty';
 import EventsItemView from '../view/trip-events-item.js';
 import SortView from '../view/trip-sort.js';
 import EventsListView from '../view/trip-events-list.js';
+import LoadingView from '../view/trip-loading.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
 import PointPresenter from '../presenter/Point.js';
 import PointNewPresenter from '../presenter/PointNew.js';
@@ -21,7 +22,9 @@ export default class Trip {
     this._sortComponent = null;
     this._infoComponent = null;
     this._btnNewPointComponent = null;
+    this._isLoading = true;
     this._eventsListComponent = new EventsListView();
+    this._loadingComponent = new LoadingView();
     this._pointPresenter = {};
     this._currentSortType = SortType.DAY;
     this._handleModeChange = this._handleModeChange.bind(this);
@@ -105,6 +108,10 @@ export default class Trip {
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
+  _renderLoading() {
+    render(this._eventsContainer, this._loadingComponent, RenderPosition.BEFOREEND);
+  }
+
   _renderEventsList() {
     render(this._eventsContainer, this._eventsListComponent, RenderPosition.BEFOREEND);
   }
@@ -149,6 +156,10 @@ export default class Trip {
         this._clearTrip({resetSortType: true, resetListEmpty: true});
         this._renderTrip();
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderTrip();
     }
   }
 
@@ -180,6 +191,7 @@ export default class Trip {
 
     remove(this._infoComponent);
     remove(this._sortComponent);
+    remove(this._loadingComponent);
 
     if (resetSortType) {
       this._currentSortType = SortType.DAY;
@@ -191,6 +203,10 @@ export default class Trip {
   }
 
   _renderTrip() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
     const amountOfPoints = this._getPoints().length;
     if (amountOfPoints === 0) {
       this._renderListEmpty();
