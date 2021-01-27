@@ -12,5 +12,17 @@ export default class BtnNewPoint extends AbstractView {
   getTemplate() {
     return createTripBtnNewPoint();
   }
+
+  deactivateBtn() {
+    if (!this.getElement().getAttribute(`disabled`)) {
+      this.getElement().setAttribute(`disabled`, `disabled`);
+    }
+  }
+
+  activateBtn() {
+    if (this.getElement().getAttribute(`disabled`)) {
+      this.getElement().removeAttribute(`disabled`);
+    }
+  }
 }
 

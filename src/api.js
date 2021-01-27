@@ -10,6 +10,12 @@ const SuccessHTTPStatusRange = {
   MAX: 299
 };
 
+const Url = {
+  OFFERS: `offers`,
+  DESTINATIONS: `destinations`,
+  POINTS: `points`
+};
+
 export default class Api {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint;
@@ -17,20 +23,42 @@ export default class Api {
   }
 
   getPoints() {
-    return this._load({url: `points`})
+    return this._load({url: Url.POINTS})
       .then(Api.toJSON)
-      .then((points) => points.map(PointsModel.adaptToClient));
+      .then((points) => points.map(PointsModel.adaptPointToClient));
+  }
+
+  getDestinations() {
+    return this._load({url: Url.DESTINATIONS})
+    .then(Api.toJSON);
+  }
+
+  getOffers() {
+    return this._load({url: Url.OFFERS})
+    .then(Api.toJSON);
+  }
+
+  getData() {
+    return Promise.all([
+      this.getPoints(),
+      this.getDestinations(),
+      this.getOffers()
+    ])
+    .then((response) => {
+      const [points, destinations, offers] = response;
+      return {points, destinations, offers};
+    });
   }
 
   updatePoint(point) {
     return this._load({
       url: `points/${point.id}`,
       method: Method.PUT,
-      body: JSON.stringify(PointsModel.adaptToServer(point)),
-      headers: new Headers({"Content-Type": `application/json`})
+      body: JSON.stringify(PointsModel.adaptPointToServer(point)),
+      headers: new Headers({'Content-Type': `application/json`})
     })
       .then(Api.toJSON)
-      .then(PointsModel.adaptToClient);
+      .then(PointsModel.adaptPointToClient);
   }
 
   _load({

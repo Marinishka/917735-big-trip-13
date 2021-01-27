@@ -2,7 +2,8 @@ import PointEditView from '../view/trip-edit-point.js';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../const.js';
 import dayjs from 'dayjs';
-import {generateId} from '../mock/point.js';
+import {generateId} from '../utils/point.js';
+import {getRandomInteger} from '../utils/common.js';
 
 export default class PointNew {
   constructor(pointListContainer, changeData) {
@@ -16,25 +17,23 @@ export default class PointNew {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init(types, accessibleСities) {
+  init(offers, destinations) {
     if (this._pointEditComponent !== null) {
       return;
     }
 
     this._emptyPoint = {
-      accessibleСities,
-      types,
-      type: types[0],
-      activeOffers: null,
-      destination: accessibleСities[0],
-      price: ``,
+      type: offers[getRandomInteger(0, offers.length - 1)].type,
+      activeOffers: [],
+      destination: destinations[getRandomInteger(0, destinations.length - 1)],
+      price: `0`,
       isFavorite: false,
       dateStart: dayjs(),
       dateFinish: dayjs(),
       id: generateId()
     };
 
-    this._pointEditComponent = new PointEditView(this._emptyPoint, true);
+    this._pointEditComponent = new PointEditView(this._emptyPoint, offers, destinations, true);
     this._pointEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._pointEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
@@ -57,7 +56,7 @@ export default class PointNew {
   _handleFormSubmit(point) {
     this._changeData(
         UserAction.ADD_POINT,
-        UpdateType.MINOR,
+        UpdateType.MAJOR,
         point
     );
     this.destroy();
