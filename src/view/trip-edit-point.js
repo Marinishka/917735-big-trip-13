@@ -8,13 +8,19 @@ const isOfferActive = (offers, offer) => {
   return offers.some((offersItem) => offersItem.title === offer);
 };
 
-const getOfferSelectors = (point, offersOfType) => {
-  const {id, activeOffers} = point;
+const getOfferSelectors = (point, offersOfType, isDisabled) => {
+  const {activeOffers} = point;
+  let id = ``;
+  if (point.id) {
+    id = point.id;
+  } else {
+    id = `new`;
+  }
   let offersList = ``;
   offersOfType.forEach(function (typeOffer) {
     const {title, price} = typeOffer;
     offersList += `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-${offersOfType.indexOf(typeOffer)}" type="checkbox" name="event-offer-${id}-${offersOfType.indexOf(typeOffer)}" data-offer-index="${offersOfType.indexOf(typeOffer)}" ${isOfferActive(activeOffers, title) ? `checked` : ``}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-${offersOfType.indexOf(typeOffer)}" type="checkbox" name="event-offer-${id}-${offersOfType.indexOf(typeOffer)}" data-offer-index="${offersOfType.indexOf(typeOffer)}" ${isOfferActive(activeOffers, title) ? `checked` : ``}  ${isDisabled ? `disabled` : ``}>
       <label class="event__offer-label" for="event-offer-${id}-${offersOfType.indexOf(typeOffer)}">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
@@ -25,13 +31,13 @@ const getOfferSelectors = (point, offersOfType) => {
   return offersList;
 };
 
-const createTripPointOffersTemplate = (editPoint, offersOfType) => {
+const createTripPointOffersTemplate = (editPoint, offersOfType, isDisabled) => {
 
   return `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
   
     <div class="event__available-offers">
-      ${getOfferSelectors(editPoint, offersOfType)}
+      ${getOfferSelectors(editPoint, offersOfType, isDisabled)}
     </div>
   </section>`;
 };
@@ -76,12 +82,12 @@ const getOffersOfType = (point, allOffers) => {
   return type[0].offers;
 };
 
-const createTripEventsDetailsTemplate = (point, offersOfType) => {
+const createTripEventsDetailsTemplate = (point, offersOfType, isDisabled) => {
   let eventsDetailsTemplate = ``;
   if (point.destination.pictures.length === 0 && point.destination.description === `` && offersOfType.length === 0) {
     return eventsDetailsTemplate;
   }
-  eventsDetailsTemplate = `<section class="event__details">${offersOfType.length !== 0 ? createTripPointOffersTemplate(point, offersOfType) : ``}
+  eventsDetailsTemplate = `<section class="event__details">${offersOfType.length !== 0 ? createTripPointOffersTemplate(point, offersOfType, isDisabled) : ``}
   ${isDestination(point) ? createTripPointDestinationTemplate(point) : ``}</section>`;
   return eventsDetailsTemplate;
 };
@@ -90,17 +96,17 @@ const isTypeChecked = (type, typeOfPoint) => {
   return type === typeOfPoint ? `checked` : ``;
 };
 
-const createTypeItem = (type, typeOfPoint) => {
+const createTypeItem = (type, typeOfPoint, isDisabled) => {
   return `<div class="event__type-item">
-  <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${isTypeChecked(type, typeOfPoint)}>
+  <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${isTypeChecked(type, typeOfPoint)}  ${isDisabled ? `disabled` : ``}>
   <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
   </div>`;
 };
 
-const createTypeList = (allTypes, typeOfPoint) => {
+const createTypeList = (allTypes, typeOfPoint, isDisabled) => {
   let typeList = ``;
   allTypes.forEach(function (someType) {
-    typeList += createTypeItem(someType, typeOfPoint);
+    typeList += createTypeItem(someType, typeOfPoint, isDisabled);
   });
   return `<div class="event__type-list">
   <fieldset class="event__type-group">
@@ -127,9 +133,19 @@ const getTypes = (offers) => {
 };
 
 const createTripEditPointTemplate = (dataOfPoint, offers, destinations, offersOfType, isNewPoint) => {
+  const {isSaving, isDeleting, isDisabled} = dataOfPoint;
   const cities = getCities(destinations);
   const types = getTypes(offers);
-  const eventDetailsTemplate = createTripEventsDetailsTemplate(dataOfPoint, offersOfType);
+  const eventDetailsTemplate = createTripEventsDetailsTemplate(dataOfPoint, offersOfType, isDisabled);
+  const getBtnText = () => {
+    let btnText = `Delete`;
+    if (isNewPoint) {
+      btnText = `Cancel`;
+    } else if (isDeleting) {
+      btnText = `Deleting`;
+    }
+    return btnText;
+  };
 
   return `<form class="event event--edit" >
       <header class="event__header">
@@ -138,15 +154,15 @@ const createTripEditPointTemplate = (dataOfPoint, offers, destinations, offersOf
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${dataOfPoint.type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
-           ${createTypeList(types, dataOfPoint.type)}
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? `disabled` : ``}>
+           ${createTypeList(types, dataOfPoint.type, isDisabled)}
         </div>
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
             ${dataOfPoint.type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${dataOfPoint.destination.name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${dataOfPoint.destination.name}" list="destination-list-1" ${isDisabled ? `disabled` : ``}>
           <datalist id="destination-list-1">
             ${generateOptions(cities)}
           </datalist>
@@ -154,10 +170,10 @@ const createTripEditPointTemplate = (dataOfPoint, offers, destinations, offersOf
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dataOfPoint.dateStart).format(`DD/MM/YY HH:mm`)}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dataOfPoint.dateStart).format(`DD/MM/YY HH:mm`)}" ${isDisabled ? `disabled` : ``}>
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dataOfPoint.dateFinish).format(`DD/MM/YY HH:mm`)}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dataOfPoint.dateFinish).format(`DD/MM/YY HH:mm`)}" ${isDisabled ? `disabled` : ``}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -165,11 +181,11 @@ const createTripEditPointTemplate = (dataOfPoint, offers, destinations, offersOf
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${dataOfPoint.price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${dataOfPoint.price}" ${isDisabled ? `disabled` : ``} min="0">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${isNewPoint ? `Cancel` : `Delete`}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? `disabled` : ``}>${isSaving ? `Saving` : `Save`}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${getBtnText()}</button>
         ${isNewPoint ? `` : `<button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>`}
@@ -183,7 +199,7 @@ export default class EditPoint extends SmartView {
     super();
     this._datepickerStart = null;
     this._datepickerFinish = null;
-    this._data = editPoint;
+    this._data = EditPoint.parsePointToData(editPoint);
     this._isNewPoint = isNewPoint;
     this._offers = offers;
     this._destinations = destinations;
@@ -252,12 +268,12 @@ export default class EditPoint extends SmartView {
 
   _formDeleteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.deleteClick(this._data);
+    this._callback.deleteClick(EditPoint.parseDataToPoint(this._data));
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit(this._data);
+    this._callback.formSubmit(EditPoint.parseDataToPoint(this._data));
   }
 
   _setClickHandler() {
@@ -306,7 +322,8 @@ export default class EditPoint extends SmartView {
 
   _cityChangeHandler(evt) {
     evt.preventDefault();
-    if (evt.target.value === ``) {
+    const cities = getCities(this._destinations);
+    if (evt.target.value === `` || !cities.includes(evt.target.value)) {
       return;
     } else {
       const newDestination = this._destinations.find((destination) => destination.name === evt.target.value);
@@ -353,5 +370,27 @@ export default class EditPoint extends SmartView {
     this.updateData({
       price: Number(evt.target.value)
     }, true);
+  }
+
+  static parsePointToData(point) {
+    return Object.assign(
+        {},
+        point,
+        {
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false
+        }
+    );
+  }
+
+  static parseDataToPoint(data) {
+    data = Object.assign({}, data);
+
+    delete data.isDisabled;
+    delete data.isSaving;
+    delete data.isDeleting;
+
+    return data;
   }
 }

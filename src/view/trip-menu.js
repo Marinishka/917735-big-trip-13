@@ -24,11 +24,26 @@ export default class Menu extends AbstractView {
     if (evt.target.tagName !== `A`) {
       return;
     }
-    this._callback.menuClick(evt.target.textContent);
+    this.setMenuItem(evt.target.dataset.menuItem);
+    this._callback.menuClick(evt.target.dataset.menuItem);
   }
 
   setMenuClickHandler(callback) {
     this._callback.menuClick = callback;
     this.getElement().addEventListener(`click`, this._menuClickHandler);
+  }
+
+  setMenuItem(menuItem) {
+    const item = this.getElement().querySelector(`[data-menu-item=${menuItem}]`);
+    const items = this.getElement().querySelectorAll(`.trip-tabs__btn`);
+    if (item !== null) {
+      items.forEach((someItem) => {
+        if (someItem === item) {
+          item.classList.add(`trip-tabs__btn--active`);
+        } else {
+          someItem.classList.remove(`trip-tabs__btn--active`);
+        }
+      });
+    }
   }
 }

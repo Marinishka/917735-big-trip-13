@@ -6,11 +6,11 @@ const isSortTypeDay = (sortType) => {
 };
 
 const isSortTypeTime = (sortType) => {
-  return sortType === SortType.Time ? `checked` : ``;
+  return sortType === SortType.TIME ? `checked` : ``;
 };
 
 const isSortTypePrice = (sortType) => {
-  return sortType === SortType.Price ? `checked` : ``;
+  return sortType === SortType.PRICE ? `checked` : ``;
 };
 
 const createTripSortTemplate = (sortType) => {

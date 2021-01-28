@@ -2,7 +2,6 @@ import PointEditView from '../view/trip-edit-point.js';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../const.js';
 import dayjs from 'dayjs';
-import {generateId} from '../utils/point.js';
 import {getRandomInteger} from '../utils/common.js';
 
 export default class PointNew {
@@ -11,16 +10,19 @@ export default class PointNew {
     this._changeData = changeData;
 
     this._pointEditComponent = null;
+    this._destroyCallback = null;
 
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init(offers, destinations) {
+  init(offers, destinations, callback) {
     if (this._pointEditComponent !== null) {
       return;
     }
+
+    this._destroyCallback = callback;
 
     this._emptyPoint = {
       type: offers[getRandomInteger(0, offers.length - 1)].type,
@@ -30,7 +32,6 @@ export default class PointNew {
       isFavorite: false,
       dateStart: dayjs(),
       dateFinish: dayjs(),
-      id: generateId()
     };
 
     this._pointEditComponent = new PointEditView(this._emptyPoint, offers, destinations, true);
@@ -47,10 +48,33 @@ export default class PointNew {
       return;
     }
 
+    if (this._destroyCallback !== null) {
+      this._destroyCallback();
+    }
+
     remove(this._pointEditComponent);
     this._pointEditComponent = null;
 
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
+  }
+
+  setSaving() {
+    this._pointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this._pointEditComponent.shake(resetFormState);
   }
 
   _handleFormSubmit(point) {
@@ -59,7 +83,6 @@ export default class PointNew {
         UpdateType.MAJOR,
         point
     );
-    this.destroy();
   }
 
   _handleDeleteClick() {

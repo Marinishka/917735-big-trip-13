@@ -1,4 +1,4 @@
-import Observer from "../utils/observer.js";
+import Observer from '../utils/observer.js';
 
 export default class Points extends Observer {
   constructor() {
@@ -9,7 +9,6 @@ export default class Points extends Observer {
   }
 
   setData(updateType, data) {
-
     const {points, destinations, offers} = data;
     this.setOffers(offers);
     this.setDestinations(destinations);
@@ -112,7 +111,7 @@ export default class Points extends Observer {
           'date_to': new Date(point.dateFinish).toISOString(),
           'is_favorite': point.isFavorite,
           'offers': point.activeOffers,
-          'base_price': point.price
+          'base_price': Number(point.price)
         }
     );
 

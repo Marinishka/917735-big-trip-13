@@ -15,10 +15,11 @@ export default class Filter {
     this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
 
     this._filterModel.addObserver(this._handleModelEvent);
+    this._pointsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
-    this._currentFilter = this._filterModel.getFilter();
+    this._currentFilter = this._filterModel.get();
     this._points = this._pointsModel.getPoints();
 
     const filters = this._getFilters();
@@ -45,7 +46,7 @@ export default class Filter {
       return;
     }
 
-    this._filterModel.setFilter(UpdateType.MINOR, filterType);
+    this._filterModel.set(UpdateType.MINOR, filterType);
   }
 
   _getFilters() {
