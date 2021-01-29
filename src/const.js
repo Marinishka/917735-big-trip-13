@@ -13,11 +13,18 @@ export const UserAction = {
 export const UpdateType = {
   PATCH: `PATCH`,
   MINOR: `MINOR`,
-  MAJOR: `MAJOR`
+  MAJOR: `MAJOR`,
+  INIT: `INIT`
 };
 
 export const FilterType = {
   EVERYTHING: `everything`,
   FUTURE: `future`,
   PAST: `past`
+};
+
+export const MenuItem = {
+  ADD_NEW_POINT: `Add_New_Point`,
+  TABLE: `Table`,
+  STATS: `Stats`
 };

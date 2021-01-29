@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 
 export const sortPointDate = (pointA, pointB) => {
   return dayjs(pointA.dateStart).diff(dayjs(pointB.dateStart));
@@ -18,4 +19,8 @@ export const isPointFuture = (point) => {
 
 export const isPointPast = (point) => {
   return dayjs().isAfter(point.dateStart);
+};
+
+export const generateId = () => {
+  return nanoid();
 };

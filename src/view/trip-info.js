@@ -3,8 +3,11 @@ import dayjs from 'dayjs';
 
 const getPrice = (points) => {
   let fullPrice = 0;
-  points.forEach((element) => {
-    fullPrice += Number(element.price);
+  points.forEach((point) => {
+    fullPrice += Number(point.price);
+    point.activeOffers.forEach((offer) => {
+      fullPrice += offer.price;
+    });
   });
   return fullPrice;
 };
@@ -36,10 +39,9 @@ const getInfoTitle = (route) => {
 };
 
 const getDates = (points) => {
-  let dates = [];
+  let dates = ``;
   if (points.length > 1) {
-    dates = [dayjs(points[0].dateStart).format(`DD MMM`), dayjs(points[1].dateStart).format(`DD MMM`)];
-    dates = `${dayjs(points[0].dateStart).format(`DD MMM`)}&nbsp;&mdash;&nbsp;${dayjs(points[1].dateStart).format(`DD MMM`)}`;
+    dates = `${dayjs(points[0].dateStart).format(`DD MMM`)}&nbsp;&mdash;&nbsp;${dayjs(points[points.length - 1].dateStart).format(`DD MMM`)}`;
   } else {
     dates = dayjs(points[0].dateStart).format(`DD MMM`);
   }
