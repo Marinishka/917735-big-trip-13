@@ -107,8 +107,8 @@ export default class Points extends Observer {
         {},
         point,
         {
-          'date_from': new Date(point.dateStart).toISOString(),
-          'date_to': new Date(point.dateFinish).toISOString(),
+          'date_from': point.dateStart,
+          'date_to': point.dateFinish,
           'is_favorite': point.isFavorite,
           'offers': point.activeOffers,
           'base_price': Number(point.price)

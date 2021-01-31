@@ -222,14 +222,14 @@ export default class EditPoint extends SmartView {
 
   _dateStartChangeHandler([userDate]) {
     this.updateData({
-      dateStart: dayjs(userDate)
-    });
+      dateStart: dayjs(userDate).toISOString()
+    }, true);
   }
 
   _dateFinishChangeHandler([userDate]) {
     this.updateData({
-      dateFinish: dayjs(userDate)
-    });
+      dateFinish: dayjs(userDate).toISOString()
+    }, true);
   }
 
   _setDatepickerStart() {
@@ -260,8 +260,9 @@ export default class EditPoint extends SmartView {
         {
           enableTime: true,
           dateFormat: `d/m/Y H:i`,
+          minDate: dayjs(this._data.dateStart).toDate(),
           defaultDate: dayjs(this._data.dateFinish).toDate(),
-          onChange: this._dateStartChangeHandler
+          onChange: this._dateFinishChangeHandler
         }
     );
   }
@@ -305,7 +306,7 @@ export default class EditPoint extends SmartView {
     this._setDatepickerStart();
     this._setDatepickerFinish();
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._callback.deleteClick);
-    this.getElement().addEventListener(`submit`, this._callback.formSubmit);
+    this.getElement().addEventListener(`submit`, this._formSubmitHandler);
     if (this.getElement().querySelector(`.event__rollup-btn`)) {
       this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._callback.click);
     }
@@ -362,7 +363,7 @@ export default class EditPoint extends SmartView {
     }
     this.updateData({
       activeOffers: newActiveOffers
-    });
+    }, true);
   }
 
   _priceChangeHandler(evt) {
@@ -390,7 +391,6 @@ export default class EditPoint extends SmartView {
     delete data.isDisabled;
     delete data.isSaving;
     delete data.isDeleting;
-
     return data;
   }
 }

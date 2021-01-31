@@ -161,7 +161,7 @@ export default class Trip {
         break;
       case UserAction.DELETE_POINT:
         this._pointPresenter[update.id].setViewState(PointPresenterViewState.DELETING);
-        this._api.deletePoint(update).than(() => {
+        this._api.deletePoint(update).then(() => {
           this._pointsModel.deletePoint(updateType, update);
         })
         .catch(() => {
