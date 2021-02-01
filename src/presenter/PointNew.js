@@ -28,7 +28,7 @@ export default class PointNew {
       type: offers[getRandomInteger(0, offers.length - 1)].type,
       activeOffers: [],
       destination: destinations[getRandomInteger(0, destinations.length - 1)],
-      price: `0`,
+      price: 0,
       isFavorite: false,
       dateStart: dayjs(),
       dateFinish: dayjs(),
