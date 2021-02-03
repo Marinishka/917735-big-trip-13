@@ -46,7 +46,9 @@ const renderMoneyChart = (moneyCtx, types, money) => {
             display: false,
             drawBorder: false
           },
-          barThickness: 44,
+          dataset: {
+            barThickness: 44
+          },
         }],
         xAxes: [{
           ticks: {
@@ -57,7 +59,9 @@ const renderMoneyChart = (moneyCtx, types, money) => {
             display: false,
             drawBorder: false
           },
-          minBarLength: 50
+          dataset: {
+            minBarLength: 50
+          }
         }],
       },
       legend: {
@@ -113,7 +117,9 @@ const renderTypeChart = (typeCtx, types, counts) => {
             display: false,
             drawBorder: false
           },
-          barThickness: 44,
+          dataset: {
+            barThickness: 44
+          },
         }],
         xAxes: [{
           ticks: {
@@ -124,7 +130,9 @@ const renderTypeChart = (typeCtx, types, counts) => {
             display: false,
             drawBorder: false
           },
-          minBarLength: 50
+          dataset: {
+            minBarLength: 50
+          }
         }],
       },
       legend: {
@@ -180,7 +188,9 @@ const renderTimeSpendChard = (timeCtx, types, timeSpends) => {
             display: false,
             drawBorder: false
           },
-          barThickness: 44,
+          dataset: {
+            barThickness: 44
+          },
         }],
         xAxes: [{
           ticks: {
@@ -191,7 +201,9 @@ const renderTimeSpendChard = (timeCtx, types, timeSpends) => {
             display: false,
             drawBorder: false
           },
-          minBarLength: 50
+          dataset: {
+            minBarLength: 50
+          }
         }],
       },
       legend: {

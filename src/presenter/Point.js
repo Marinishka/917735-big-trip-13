@@ -61,6 +61,7 @@ export default class Point {
 
     if (this._mode === Mode.DEFAULT) {
       replace(this._pointComponent, prevPointComponent);
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
 
     if (this._mode === Mode.EDITING) {
@@ -111,6 +112,7 @@ export default class Point {
     remove(this._pointContainer);
     remove(this._pointComponent);
     remove(this._pointEditComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _renderPoint() {
@@ -118,6 +120,7 @@ export default class Point {
   }
 
   _handleDeleteClick(point) {
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
     this._changeData(
         UserAction.DELETE_POINT,
         UpdateType.MAJOR,
@@ -160,11 +163,11 @@ export default class Point {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
       this._replaceFormToPoint();
-      document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }
 
   _handleFormSubmit(update) {
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
     this._changeData(
         UserAction.UPDATE_POINT,
         UpdateType.MAJOR,
