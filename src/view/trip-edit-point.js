@@ -345,7 +345,7 @@ export default class EditPoint extends SmartView {
 
   _activeOffersChangeHandler(evt) {
     evt.preventDefault();
-    let checkedOffer = this._offersOfType[evt.target.dataset.offerIndex];
+    const checkedOffer = this._offersOfType[evt.target.dataset.offerIndex];
     let newActiveOffers = [];
     if (this._data.activeOffers.length === 0) {
       newActiveOffers.push(this._offersOfType[evt.target.dataset.offerIndex]);
