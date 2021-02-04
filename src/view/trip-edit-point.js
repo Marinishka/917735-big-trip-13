@@ -220,6 +220,14 @@ export default class EditPoint extends SmartView {
     this._setDatepickerFinish();
   }
 
+  removeElement() {
+    super.removeElement();
+    this._datepickerStart.destroy();
+    this._datepickerStart = null;
+    this._datepickerFinish.destroy();
+    this._datepickerFinish = null;
+  }
+
   _dateStartChangeHandler([userDate]) {
     this.updateData({
       dateStart: dayjs(userDate).toISOString()
