@@ -35,7 +35,7 @@ const createTripPointOffersTemplate = (editPoint, offersOfType, isDisabled) => {
 
   return `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-  
+
     <div class="event__available-offers">
       ${getOfferSelectors(editPoint, offersOfType, isDisabled)}
     </div>
@@ -229,9 +229,11 @@ export default class EditPoint extends SmartView {
   }
 
   _dateStartChangeHandler([userDate]) {
-    this.updateData({
-      dateStart: dayjs(userDate).toISOString()
-    }, true);
+    let newData = {dateStart: dayjs(userDate).toISOString()};
+    if (dayjs(userDate).toISOString() > this._data.dateFinish) {
+      newData.dateFinish = dayjs(userDate).toISOString();
+    }
+    this.updateData(newData);
   }
 
   _dateFinishChangeHandler([userDate]) {
